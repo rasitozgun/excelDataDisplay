@@ -6,7 +6,7 @@ function App() {
   const [items, setItem] = useState([]);
   const [searchItem, setSearchItem] = useState([]);
   const [filterItem, setFilterItem] = useState("");
-  const rgx = new RegExp(/^\d..\d/gi);
+  const rgx = new RegExp(/^\d....\d/gi);
   const regex = /[a-z]/g;
 
   const readExcel = (file) => {
