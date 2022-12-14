@@ -26,6 +26,7 @@ function App() {
       };
     });
     promise.then((d) => {
+      console.log(d[0]);
       setItem(d);
       setSearchItem(d);
     });
@@ -41,7 +42,7 @@ function App() {
       setItem(filterResult);
     } else if (regex.test(e.target.value)) {
       const filterResult = searchItem.filter((item) =>
-        item.baslik.toLowerCase().includes(e.target.value.toLowerCase())
+        item["Başlık"].toLowerCase().includes(e.target.value.toLowerCase())
       );
       setItem(filterResult);
     }
@@ -52,7 +53,6 @@ function App() {
     <div>
       <input
         type="file"
-        accept=".xls,.xlsx"
         onChange={(e) => {
           const file = e.target.files[0];
           readExcel(file);
@@ -66,7 +66,7 @@ function App() {
             type="search"
             value={filterItem}
             onInput={(e) => handleFilter(e)}
-            class="form-control"
+            className="form-control"
             placeholder="Search"
           />
         </div>
@@ -96,20 +96,20 @@ function App() {
           {items.slice(0, 30).map((d) => (
             <tr key={d.Sno}>
               <th scope="row">{d.Sno}</th>
-              <td>{d.baslik}</td>
-              <td>{d.kisa_baslik}</td>
+              <td>{d["Başlık"]}</td>
+              <td>{d["Kısa Başlık"]}</td>
               <td>{d.MEP}</td>
-              <td>{d.odeme}</td>
+              <td>{d["Ödeme"]}</td>
               <td>{d.ISSN}</td>
               <td>{d.EISSN}</td>
-              <td>{d.AHCI ? "✓" : ""}</td>
-              <td>{d.SOC ? "✓" : ""}</td>
+              <td>{d["AHCI?"] ? "✓" : ""}</td>
+              <td>{d["SOC?"] ? "✓" : ""}</td>
               <td>{d.SCI ? "✓" : ""}</td>
               <td>{d.Q1 ? "✓" : ""}</td>
               <td>{d.Q2 ? "✓" : ""}</td>
               <td>{d.Q3 ? "✓" : ""}</td>
               <td>{d.Q4 ? "✓" : ""}</td>
-              <td>{d.yil}</td>
+              <td>{d["Yıl"]}</td>
             </tr>
           ))}
         </tbody>
