@@ -52,6 +52,7 @@ function App() {
     <div>
       <input
         type="file"
+        accept=".xls,.xlsx"
         onChange={(e) => {
           const file = e.target.files[0];
           readExcel(file);
