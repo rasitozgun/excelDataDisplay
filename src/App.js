@@ -1,5 +1,4 @@
 import "./App.css";
-
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 
@@ -7,6 +6,8 @@ function App() {
   const [items, setItem] = useState([]);
   const [searchItem, setSearchItem] = useState([]);
   const [filterItem, setFilterItem] = useState("");
+  const rgx = new RegExp(/^\d..\d/gi);
+  const regex = /[a-z]/g;
 
   const readExcel = (file) => {
     const promise = new Promise((resolve, reject) => {
@@ -25,7 +26,6 @@ function App() {
       };
     });
     promise.then((d) => {
-      console.log(d);
       setItem(d);
       setSearchItem(d);
     });
@@ -34,7 +34,12 @@ function App() {
   const handleFilter = (e) => {
     if (e.target.value === "") {
       setItem(searchItem);
-    } else {
+    } else if (rgx.test(e.target.value)) {
+      const filterResult = searchItem.filter((item) =>
+        item.ISSN.toLowerCase().includes(e.target.value.toLowerCase())
+      );
+      setItem(filterResult);
+    } else if (regex.test(e.target.value)) {
       const filterResult = searchItem.filter((item) =>
         item.baslik.toLowerCase().includes(e.target.value.toLowerCase())
       );
@@ -53,7 +58,7 @@ function App() {
         }}
       />
       <br />
-
+      <br />
       <div className="input-group">
         <div className="form-outline">
           <input
@@ -65,6 +70,7 @@ function App() {
           />
         </div>
       </div>
+      <br />
       <table className="table">
         <thead>
           <tr>
@@ -95,13 +101,13 @@ function App() {
               <td>{d.odeme}</td>
               <td>{d.ISSN}</td>
               <td>{d.EISSN}</td>
-              <td>{d.AHCI ? "True" : "False"}</td>
-              <td>{d.SOC ? "True" : "False"}</td>
-              <td>{d.SCI ? "True" : "False"}</td>
-              <td>{d.Q1 ? "True" : "False"}</td>
-              <td>{d.Q2 ? "True" : "False"}</td>
-              <td>{d.Q3 ? "True" : "False"}</td>
-              <td>{d.Q4 ? "True" : "False"}</td>
+              <td>{d.AHCI ? "✓" : ""}</td>
+              <td>{d.SOC ? "✓" : ""}</td>
+              <td>{d.SCI ? "✓" : ""}</td>
+              <td>{d.Q1 ? "✓" : ""}</td>
+              <td>{d.Q2 ? "✓" : ""}</td>
+              <td>{d.Q3 ? "✓" : ""}</td>
+              <td>{d.Q4 ? "✓" : ""}</td>
               <td>{d.yil}</td>
             </tr>
           ))}
