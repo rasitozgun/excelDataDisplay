@@ -72,7 +72,7 @@ function App() {
         </div>
       </div>
       <br />
-      <table className="table">
+      <table className="table table-hover">
         <thead>
           <tr>
             <th scope="col">SNO</th>
