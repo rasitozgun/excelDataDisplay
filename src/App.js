@@ -12,6 +12,7 @@ function App() {
 
   useEffect(() => {
     setItem(f.data);
+    setSearchItem(f.data);
   }, []);
 
   const readExcel = (file) => {
@@ -31,7 +32,6 @@ function App() {
       };
     });
     promise.then((d) => {
-      console.log(d[0]);
       setItem(d);
       setSearchItem(d);
     });
