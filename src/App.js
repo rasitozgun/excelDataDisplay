@@ -1,6 +1,7 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
+import f from "./data/data.json";
 
 function App() {
   const [items, setItem] = useState([]);
@@ -8,6 +9,10 @@ function App() {
   const [filterItem, setFilterItem] = useState("");
   const rgx = new RegExp(/^\d{0,}.\d/gi);
   const regex = /[a-z]/g;
+
+  useEffect(() => {
+    setItem(f.data);
+  }, []);
 
   const readExcel = (file) => {
     const promise = new Promise((resolve, reject) => {
