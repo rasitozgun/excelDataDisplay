@@ -2,11 +2,15 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import f from "./data/data.json";
+import ReactPaginate from "react-paginate";
 
 function App() {
   const [items, setItem] = useState([]);
   const [searchItem, setSearchItem] = useState([]);
   const [filterItem, setFilterItem] = useState("");
+  const [currentItemPage, setCurrentItemPage] = useState(1);
+  const postItemPerPage = 30;
+
   const rgx = new RegExp(/^\d{0,}.\d/gi);
   const regex = /[a-z]/g;
 
@@ -37,6 +41,12 @@ function App() {
     });
   };
 
+  const lastPostIndex = currentItemPage * postItemPerPage;
+  const firstPostIndex = lastPostIndex - postItemPerPage;
+  const currentPosts = items.slice(firstPostIndex, lastPostIndex);
+
+  const totalPosts = Math.ceil(items.length / postItemPerPage);
+
   const handleFilter = (e) => {
     if (e.target.value === "") {
       setItem(searchItem);
@@ -52,6 +62,10 @@ function App() {
       setItem(filterResult);
     }
     setFilterItem(e.target.value);
+  };
+
+  const handlePageClick = (data) => {
+    setCurrentItemPage(data.selected + 1);
   };
 
   return (
@@ -71,15 +85,15 @@ function App() {
             type="search"
             value={filterItem}
             onInput={(e) => handleFilter(e)}
-            className="form-control"
+            className={"form-control justify-content-center"}
             placeholder="Search"
           />
         </div>
       </div>
       <br />
-      <table className="table table-hover">
+      <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
         <thead>
-          <tr>
+          <tr className={"text-center"}>
             <th scope="col">SNO</th>
             <th scope="col">Başlık</th>
             <th scope="col">Kısa Başlık</th>
@@ -98,7 +112,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {items.slice(0, 30).map((d) => (
+          {currentPosts.map((d) => (
             <tr key={d.Sno}>
               <th scope="row">{d.Sno}</th>
               <td>{d["Başlık"]}</td>
@@ -119,6 +133,25 @@ function App() {
           ))}
         </tbody>
       </table>
+      <ReactPaginate
+        previousLabel={"Previous"}
+        nextLabel={"Next"}
+        breakLabel={"..."}
+        pageCount={totalPosts}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={2}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
     </div>
   );
 }

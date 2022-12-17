@@ -13,7 +13,9 @@
     "papaparse": "^5.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-paginate": "^8.1.4",
     "react-search-box": "^2.3.0",
+    "simple-react-pagination": "^1.0.5",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },
