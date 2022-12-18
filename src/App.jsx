@@ -75,6 +75,7 @@ function App() {
         onChange={(e) => {
           const file = e.target.files[0];
           readExcel(file);
+          setCurrentItemPage(1);
         }}
       />
       <br />
