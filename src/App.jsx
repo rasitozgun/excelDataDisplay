@@ -81,7 +81,7 @@ function App() {
       <br />
       <br />
       <div className="input-group">
-        <div className="form-outline">
+        <div className="form-outline ">
           <input
             type="search"
             value={filterItem}
@@ -114,7 +114,7 @@ function App() {
         </thead>
         <tbody>
           {currentPosts.map((d) => (
-            <tr key={d.Sno}>
+            <tr key={d.Sno} className={"text-center"}>
               <th scope="row">{d.Sno}</th>
               <td>{d["Başlık"]}</td>
               <td>{d["Kısa Başlık"]}</td>
@@ -152,6 +152,7 @@ function App() {
         breakClassName={"page-item"}
         breakLinkClassName={"page-link"}
         activeClassName={"active"}
+        activeLinkClassName={"page-link"}
       />
     </div>
   );
