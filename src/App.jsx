@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import f from "./data/data.json";
 import ReactPaginate from "react-paginate";
@@ -10,30 +10,23 @@ function App() {
   const [filterItem, setFilterItem] = useState("");
   const [currentPosts, setCurrentPosts] = useState([]);
   const [currentItemPage, setCurrentItemPage] = useState(1);
+  const [totalPosts, setTotalPosts] = useState(0);
   const postItemPerPage = 30;
-
-  const fileInputRef = useRef(null);
-
-  const handleFileChange = () => {
-    const file = fileInputRef.current?.files[0];
-    if (file) {
-      readExcel(file);
-      setCurrentItemPage(1);
-    }
-  };
 
   const lastPostIndex = currentItemPage * postItemPerPage;
   const firstPostIndex = lastPostIndex - postItemPerPage;
 
   useEffect(() => {
     setCurrentPosts(items.slice(firstPostIndex, lastPostIndex));
-  }, [currentItemPage, filterItem, firstPostIndex, items, lastPostIndex]);
+  }, [currentItemPage, firstPostIndex, items, lastPostIndex]);
 
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
       setTitles(Object.keys(items[0]));
     }
-  }, [items, titles]);
+
+    setTotalPosts(Math.ceil(items.length / postItemPerPage));
+  }, [items]);
 
   function readExcel(file) {
     const promise = new Promise((resolve, reject) => {
@@ -55,38 +48,32 @@ function App() {
       setItems(d);
     });
   }
-
-  const totalPosts = Math.ceil(items.length / postItemPerPage);
+  function filterItems(items, filterItem) {
+    return items.filter((item) =>
+      Object.values(item).some((value) =>
+        String(value).toLowerCase().includes(filterItem.toLowerCase())
+      )
+    );
+  }
 
   const handleFilter = (e) => {
     setFilterItem(e.target.value);
+    setCurrentPosts(filterItems(items, e.target.value).slice(firstPostIndex, lastPostIndex));
+    setItems(filterItems(items, e.target.value));
   };
 
   const handlePageClick = (data) => {
     setCurrentItemPage(data.selected + 1);
+    setCurrentPosts(items.slice(firstPostIndex, lastPostIndex));
   };
-  function filterItems(items, filterItem, firstPostIndex, lastPostIndex) {
-    return items
-      .filter((item) =>
-        Object.values(item).some((value) =>
-          String(value).toLowerCase().includes(filterItem.toLowerCase())
-        )
-      )
-      .slice(firstPostIndex, lastPostIndex);
-  }
 
-  useEffect(() => {
-    setCurrentPosts(filterItems(items, filterItem, firstPostIndex, lastPostIndex));
-    setCurrentItemPage(1); // Reset the current page to the first page after filtering
-  }, [filterItem, items, firstPostIndex, lastPostIndex]);
-
-  const TableRow = React.memo(({ item }) => (
+  const TableRow = ({ item }) => (
     <tr className={"text-center"}>
       {Object.keys(item).map((key) => (
         <td key={key}>{typeof item[key] === "boolean" ? (item[key] ? "✓" : "") : item[key]}</td>
       ))}
     </tr>
-  ));
+  );
 
   return (
     <div>
@@ -105,9 +92,7 @@ function App() {
           <input
             type="search"
             value={filterItem}
-            ref={fileInputRef}
-            onChange={(e) => handleFileChange(e)}
-            onInput={(e) => handleFilter(e)}
+            onChange={(e) => handleFilter(e)}
             className={"form-control justify-content-center"}
             placeholder="Search"
           />
