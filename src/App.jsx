@@ -8,6 +8,7 @@ function App() {
   const [items, setItems] = useState(f.data);
   const [titles, setTitles] = useState([]);
   const [filterItem, setFilterItem] = useState("");
+  const [filteredItems, setFilteredItems] = useState([]); // items after filter
   const [currentPosts, setCurrentPosts] = useState([]);
   const [currentItemPage, setCurrentItemPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
@@ -17,14 +18,14 @@ function App() {
   const firstPostIndex = lastPostIndex - postItemPerPage;
 
   useEffect(() => {
-    setCurrentPosts(items.slice(firstPostIndex, lastPostIndex));
-  }, [currentItemPage, firstPostIndex, items, lastPostIndex]);
+    setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
+  }, [currentItemPage, firstPostIndex, filteredItems, lastPostIndex]);
 
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
       setTitles(Object.keys(items[0]));
     }
-
+    setFilteredItems(items);
     setTotalPosts(Math.ceil(items.length / postItemPerPage));
   }, [items]);
 
@@ -55,16 +56,17 @@ function App() {
       )
     );
   }
-
   const handleFilter = (e) => {
-    setFilterItem(e.target.value);
-    setCurrentPosts(filterItems(items, e.target.value).slice(firstPostIndex, lastPostIndex));
-    setItems(filterItems(items, e.target.value));
+    const filterValue = e.target.value;
+    setFilterItem(filterValue);
+    setFilteredItems(filterItems(items, filterValue));
+    setTotalPosts(Math.ceil(filteredItems.length / postItemPerPage));
+    setCurrentItemPage(1);
   };
 
   const handlePageClick = (data) => {
     setCurrentItemPage(data.selected + 1);
-    setCurrentPosts(items.slice(firstPostIndex, lastPostIndex));
+    setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
   };
 
   const TableRow = ({ item }) => (
