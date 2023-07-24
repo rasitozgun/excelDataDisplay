@@ -32,8 +32,9 @@ function App() {
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
       setTitles(Object.keys(items[0]));
+      console.log("titles: ", titles);
     }
-  }, [items]);
+  }, [items, titles]);
 
   function readExcel(file) {
     const promise = new Promise((resolve, reject) => {
@@ -53,6 +54,7 @@ function App() {
     });
     promise.then((d) => {
       setItems(d);
+      console.log("items: ", items);
     });
   }
 
