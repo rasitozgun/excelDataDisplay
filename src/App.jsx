@@ -1,25 +1,41 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as XLSX from "xlsx";
 import f from "./data/data.json";
 import ReactPaginate from "react-paginate";
 
 function App() {
-  const [items, setItem] = useState([]);
-  const [searchItem, setSearchItem] = useState([]);
+  const [items, setItems] = useState(f.data);
+  const [titles, setTitles] = useState([]);
   const [filterItem, setFilterItem] = useState("");
+  const [currentPosts, setCurrentPosts] = useState([]);
   const [currentItemPage, setCurrentItemPage] = useState(1);
   const postItemPerPage = 30;
 
-  const rgx = new RegExp(/^\d{0,}.\d/gi);
-  const regex = /[a-z]/g;
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = () => {
+    const file = fileInputRef.current?.files[0];
+    if (file) {
+      readExcel(file);
+      setCurrentItemPage(1);
+    }
+  };
+
+  const lastPostIndex = currentItemPage * postItemPerPage;
+  const firstPostIndex = lastPostIndex - postItemPerPage;
 
   useEffect(() => {
-    setItem(f.data);
-    setSearchItem(f.data);
-  }, []);
+    setCurrentPosts(items.slice(firstPostIndex, lastPostIndex));
+  }, [currentItemPage, filterItem, firstPostIndex, items, lastPostIndex]);
 
-  const readExcel = (file) => {
+  useEffect(() => {
+    if (Array.isArray(items) && items.length > 0) {
+      setTitles(Object.keys(items[0]));
+    }
+  }, [items]);
+
+  function readExcel(file) {
     const promise = new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsArrayBuffer(file);
@@ -36,37 +52,41 @@ function App() {
       };
     });
     promise.then((d) => {
-      setItem(d);
-      setSearchItem(d);
+      setItems(d);
     });
-  };
-
-  const lastPostIndex = currentItemPage * postItemPerPage;
-  const firstPostIndex = lastPostIndex - postItemPerPage;
-  const currentPosts = items.slice(firstPostIndex, lastPostIndex);
+  }
 
   const totalPosts = Math.ceil(items.length / postItemPerPage);
 
   const handleFilter = (e) => {
-    if (e.target.value === "") {
-      setItem(searchItem);
-    } else if (rgx.test(e.target.value)) {
-      const filterResult = searchItem.filter((item) =>
-        item.ISSN.toLowerCase().includes(e.target.value.toLowerCase())
-      );
-      setItem(filterResult);
-    } else if (regex.test(e.target.value)) {
-      const filterResult = searchItem.filter((item) =>
-        item["Başlık"].toLowerCase().includes(e.target.value.toLowerCase())
-      );
-      setItem(filterResult);
-    }
     setFilterItem(e.target.value);
   };
 
   const handlePageClick = (data) => {
     setCurrentItemPage(data.selected + 1);
   };
+  function filterItems(items, filterItem, firstPostIndex, lastPostIndex) {
+    return items
+      .filter((item) =>
+        Object.values(item).some((value) =>
+          String(value).toLowerCase().includes(filterItem.toLowerCase())
+        )
+      )
+      .slice(firstPostIndex, lastPostIndex);
+  }
+
+  useEffect(() => {
+    setCurrentPosts(filterItems(items, filterItem, firstPostIndex, lastPostIndex));
+    setCurrentItemPage(1); // Reset the current page to the first page after filtering
+  }, [filterItem, items, firstPostIndex, lastPostIndex]);
+
+  const TableRow = React.memo(({ item }) => (
+    <tr className={"text-center"}>
+      {Object.keys(item).map((key) => (
+        <td key={key}>{typeof item[key] === "boolean" ? (item[key] ? "✓" : "") : item[key]}</td>
+      ))}
+    </tr>
+  ));
 
   return (
     <div>
@@ -85,6 +105,8 @@ function App() {
           <input
             type="search"
             value={filterItem}
+            ref={fileInputRef}
+            onChange={(e) => handleFileChange(e)}
             onInput={(e) => handleFilter(e)}
             className={"form-control justify-content-center"}
             placeholder="Search"
@@ -95,42 +117,16 @@ function App() {
       <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
         <thead>
           <tr className={"text-center"}>
-            <th scope="col">SNO</th>
-            <th scope="col">Başlık</th>
-            <th scope="col">Kısa Başlık</th>
-            <th scope="col">MEP</th>
-            <th scope="col">Ödeme</th>
-            <th scope="col">ISSN</th>
-            <th scope="col">EISSN</th>
-            <th scope="col">AHCI?</th>
-            <th scope="col">SOC?</th>
-            <th scope="col">SCI</th>
-            <th scope="col">q1</th>
-            <th scope="col">q2</th>
-            <th scope="col">q3</th>
-            <th scope="col">q4</th>
-            <th scope="col">Yıl</th>
+            {titles?.map((title) => (
+              <th scope="col" key={title}>
+                {title}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {currentPosts.map((d) => (
-            <tr key={d.Sno} className={"text-center"}>
-              <th scope="row">{d.Sno}</th>
-              <td>{d["Başlık"]}</td>
-              <td>{d["Kısa Başlık"]}</td>
-              <td>{d.MEP}</td>
-              <td>{d["Ödeme"]}</td>
-              <td>{d.ISSN}</td>
-              <td>{d.EISSN}</td>
-              <td>{d["AHCI?"] ? "✓" : ""}</td>
-              <td>{d["SOC?"] ? "✓" : ""}</td>
-              <td>{d.SCI ? "✓" : ""}</td>
-              <td>{d.q1 ? "✓" : ""}</td>
-              <td>{d.q2 ? "✓" : ""}</td>
-              <td>{d.q3 ? "✓" : ""}</td>
-              <td>{d.q4 ? "✓" : ""}</td>
-              <td>{d["Yıl"]}</td>
-            </tr>
+          {currentPosts.map((d, key) => (
+            <TableRow key={key} item={d} />
           ))}
         </tbody>
       </table>
