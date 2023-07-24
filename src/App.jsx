@@ -59,7 +59,14 @@ function App() {
   const handleFilter = (e) => {
     const filterValue = e.target.value;
     setFilterItem(filterValue);
-    setFilteredItems(filterItems(items, filterValue));
+    if (filterItem === "") {
+      setFilteredItems(items);
+      setTotalPosts(Math.ceil(items.length / postItemPerPage));
+      setCurrentItemPage(1);
+      return;
+    }
+    const filteredItems = filterItems(items, filterValue);
+    setFilteredItems(filteredItems);
     setTotalPosts(Math.ceil(filteredItems.length / postItemPerPage));
     setCurrentItemPage(1);
   };
