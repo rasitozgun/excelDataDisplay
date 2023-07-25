@@ -6,6 +6,7 @@ import SearchInput from "./components/searchInput";
 import { readExcel } from "./utils/functions";
 import DragAndDropFileInput from "./components/fileInput";
 import Pagination from "./components/pagination";
+import ExportAsCsv from "./components/exportAsCsv";
 
 function App() {
   const [items, setItems] = useState(f.data);
@@ -78,6 +79,7 @@ function App() {
       <br />
       <div className="input-group p-2">
         <SearchInput onChange={(e) => handleFilter(e)} value={filterItem} placeholder="Search" />
+        <ExportAsCsv data={items} />
       </div>
       <br />
       <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
