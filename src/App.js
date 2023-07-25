@@ -59,6 +59,7 @@ function App() {
   const handlePageClick = (data) => {
     setCurrentItemPage(data.selected + 1);
     setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
+    console.log(currentPosts);
   };
 
   const handleExportCsv = () => {
