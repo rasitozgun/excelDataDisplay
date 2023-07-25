@@ -16,6 +16,7 @@ function App() {
   const [currentPosts, setCurrentPosts] = useState([]);
   const [currentItemPage, setCurrentItemPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
+  const [csvData, setCsvData] = useState([]);
   const postItemPerPage = 30;
 
   const lastPostIndex = currentItemPage * postItemPerPage;
@@ -60,6 +61,10 @@ function App() {
     setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
   };
 
+  const handleExportCsv = () => {
+    setCsvData(items);
+  };
+
   return (
     <div>
       <DragAndDropFileInput
@@ -79,7 +84,7 @@ function App() {
       <br />
       <div className="input-group p-2">
         <SearchInput onChange={(e) => handleFilter(e)} value={filterItem} placeholder="Search" />
-        <ExportAsCsv data={items} />
+        <ExportAsCsv onClick={handleExportCsv} data={csvData} />
       </div>
       <br />
       <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
