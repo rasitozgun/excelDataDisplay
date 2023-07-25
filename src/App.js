@@ -1,11 +1,11 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import f from "./data/data.json";
-import ReactPaginate from "react-paginate";
 import TableRow from "./components/tableRow";
 import SearchInput from "./components/searchInput";
-import { FileUploader } from "react-drag-drop-files";
 import { readExcel } from "./utils/functions";
+import DragAndDropFileInput from "./components/fileInput";
+import Pagination from "./components/pagination";
 
 function App() {
   const [items, setItems] = useState(f.data);
@@ -61,8 +61,7 @@ function App() {
 
   return (
     <div>
-      <FileUploader
-        className={"m-4"}
+      <DragAndDropFileInput
         handleChange={(file) => {
           readExcel(file)
             .then((data) => {
@@ -77,10 +76,8 @@ function App() {
       />
 
       <br />
-      <div className="input-group">
-        <div className="form-outline ">
-          <SearchInput onChange={(e) => handleFilter(e)} value={filterItem} placeholder="Search" />
-        </div>
+      <div className="input-group p-2">
+        <SearchInput onChange={(e) => handleFilter(e)} value={filterItem} placeholder="Search" />
       </div>
       <br />
       <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
@@ -99,25 +96,10 @@ function App() {
           ))}
         </tbody>
       </table>
-      <ReactPaginate
-        previousLabel={"Previous"}
-        nextLabel={"Next"}
-        breakLabel={"..."}
-        pageCount={totalPosts}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={2}
-        onPageChange={handlePageClick}
-        containerClassName={"pagination justify-content-center"}
-        pageClassName={"page-item"}
-        pageLinkClassName={"page-link"}
-        previousClassName={"page-item"}
-        previousLinkClassName={"page-link"}
-        nextClassName={"page-item"}
-        nextLinkClassName={"page-link"}
-        breakClassName={"page-item"}
-        breakLinkClassName={"page-link"}
-        activeClassName={"active"}
-        activeLinkClassName={"page-link"}
+      <Pagination
+        forcePage={currentItemPage - 1}
+        totalPosts={totalPosts}
+        handlePageClick={handlePageClick}
       />
     </div>
   );

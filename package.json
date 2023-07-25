@@ -12,7 +12,8 @@
     "react-drag-drop-files": "^2.3.10",
     "react-paginate": "^8.1.4",
     "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zustand": "^4.3.9"
   },
   "devDependencies": {
     "react-scripts": "^5.0.1"
