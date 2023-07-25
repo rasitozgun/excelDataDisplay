@@ -1,8 +1,11 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import * as XLSX from "xlsx";
 import f from "./data/data.json";
 import ReactPaginate from "react-paginate";
+import TableRow from "./components/tableRow";
+import SearchInput from "./components/searchInput";
+import { FileUploader } from "react-drag-drop-files";
+import { readExcel } from "./utils/functions";
 
 function App() {
   const [items, setItems] = useState(f.data);
@@ -29,26 +32,6 @@ function App() {
     setTotalPosts(Math.ceil(items.length / postItemPerPage));
   }, [items]);
 
-  function readExcel(file) {
-    const promise = new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsArrayBuffer(file);
-      fileReader.onload = (e) => {
-        const bufferArray = e.target.result;
-        const wb = XLSX.read(bufferArray, { type: "buffer" });
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, { raw: true });
-        resolve(data);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-    promise.then((d) => {
-      setItems(d);
-    });
-  }
   function filterItems(items, filterItem) {
     return items.filter((item) =>
       Object.values(item).some((value) =>
@@ -76,35 +59,27 @@ function App() {
     setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
   };
 
-  const TableRow = ({ item }) => (
-    <tr className={"text-center"}>
-      {Object.keys(item).map((key) => (
-        <td key={key}>{typeof item[key] === "boolean" ? (item[key] ? "✓" : "") : item[key]}</td>
-      ))}
-    </tr>
-  );
-
   return (
     <div>
-      <input
-        type="file"
-        onChange={(e) => {
-          const file = e.target.files[0];
-          readExcel(file);
+      <FileUploader
+        className={"m-4"}
+        handleChange={(file) => {
+          readExcel(file)
+            .then((data) => {
+              setItems(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
           setCurrentItemPage(1);
         }}
+        types={["xlsx"]}
       />
-      <br />
+
       <br />
       <div className="input-group">
         <div className="form-outline ">
-          <input
-            type="search"
-            value={filterItem}
-            onChange={(e) => handleFilter(e)}
-            className={"form-control justify-content-center"}
-            placeholder="Search"
-          />
+          <SearchInput onChange={(e) => handleFilter(e)} value={filterItem} placeholder="Search" />
         </div>
       </div>
       <br />
