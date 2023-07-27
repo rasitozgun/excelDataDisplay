@@ -28,7 +28,7 @@ function App() {
 
   useEffect(() => {
     if (Array.isArray(items) && items.length > 0) {
-      setTitles(Object.keys(items[0]));
+      setTitles(Object.keys(items[0]).sort());
     }
     setFilteredItems(items);
     setTotalPosts(Math.ceil(items.length / postItemPerPage));
@@ -59,7 +59,6 @@ function App() {
   const handlePageClick = (data) => {
     setCurrentItemPage(data.selected + 1);
     setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
-    console.log(currentPosts);
   };
 
   const handleExportCsv = () => {
@@ -92,7 +91,7 @@ function App() {
         <thead>
           <tr className={"text-center"}>
             {titles?.map((title) => (
-              <th scope="col" key={title}>
+              <th scope="col" key={title}>  
                 {title}
               </th>
             ))}
