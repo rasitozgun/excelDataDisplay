@@ -1,12 +1,13 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import f from "./data/data.json";
-import TableRow from "./components/tableRow";
-import SearchInput from "./components/searchInput";
+import TableRow from "./components/TableRow/TableRow";
+import SearchInput from "./components/SearchInput/SearchInput";
 import { readExcel } from "./utils/functions";
-import DragAndDropFileInput from "./components/fileInput";
-import Pagination from "./components/pagination";
-import ExportAsCsv from "./components/exportAsCsv";
+import DragAndDropFileInput from "./components/FileInput/FileInput";
+import Pagination from "./components/Pagination/Pagination";
+import ExportAsCsv from "./components/ExportAsCsv/ExportAsCsv";
+import ExportNumber from "./components/ExportNumber/ExportNumber";
 
 function App() {
   const [items, setItems] = useState(f.data);
@@ -16,8 +17,7 @@ function App() {
   const [currentPosts, setCurrentPosts] = useState([]);
   const [currentItemPage, setCurrentItemPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [csvData, setCsvData] = useState([]);
-  const postItemPerPage = 30;
+  const postItemPerPage = 13;
 
   const lastPostIndex = currentItemPage * postItemPerPage;
   const firstPostIndex = lastPostIndex - postItemPerPage;
@@ -61,9 +61,7 @@ function App() {
     setCurrentPosts(filteredItems.slice(firstPostIndex, lastPostIndex));
   };
 
-  const handleExportCsv = () => {
-    setCsvData(items);
-  };
+ 
 
   return (
     <div>
@@ -81,33 +79,35 @@ function App() {
         types={["xlsx"]}
       />
 
-      <br />
       <div className="input-group p-2">
         <SearchInput onChange={(e) => handleFilter(e)} value={filterItem} placeholder="Search" />
-        <ExportAsCsv onClick={handleExportCsv} data={csvData} />
+        <ExportNumber max={items.length} />
+        <ExportAsCsv  data={items} />
       </div>
       <br />
-      <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
-        <thead>
-          <tr className={"text-center"}>
-            {titles?.map((title) => (
-              <th scope="col" key={title}>  
-                {title}
-              </th>
+      <div className="table-wrapper">
+        <table className="table table-hover table-striped table-sm table-responsive-sm table-bordered">
+          <thead >
+            <tr className="text-center">
+              {titles?.map((title) => (
+                <th scope="col" key={title}>
+                  {title}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {currentPosts.map((d,  key) => (
+              <TableRow key={key} item={d} />
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {currentPosts.map((d, key) => (
-            <TableRow key={key} item={d} />
-          ))}
-        </tbody>
-      </table>
-      <Pagination
-        forcePage={currentItemPage - 1}
-        totalPosts={totalPosts}
-        handlePageClick={handlePageClick}
-      />
+          </tbody>
+        </table>
+      </div>
+          <Pagination
+            forcePage={currentItemPage - 1}
+            totalPosts={totalPosts}
+            handlePageClick={handlePageClick}
+          />
     </div>
   );
 }
